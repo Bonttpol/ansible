@@ -1,0 +1,11 @@
+---
+- hosts: test
+  gather_facts: NO
+  become_user: temp
+
+  tasks:
+
+    - name:
+      apt:
+        name: zabbix-agent
+        #update_cache: yes

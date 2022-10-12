@@ -1,0 +1,6 @@
+---
+- hosts: test
+  gather_facts: NO
+
+  roles:
+    - vsftpd

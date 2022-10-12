@@ -1,0 +1,19 @@
+---
+# tasks file for vsftpd
+- name: Install vsftpd
+  apt:
+    name: vsftpd
+    update_cache: yes
+
+- name: Config
+  lineinfile: 
+    dest: /etc/vsftpd.conf
+    regexp: ''
+    insertafter: EOF
+    line: "anonymous_enable=NO\nlocal_enable=YES\nwrite_enable=YES"
+  
+- name: Start service
+  service:
+    name: vsftpd
+    state: started
+    enabled: yes
