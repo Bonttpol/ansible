@@ -1,0 +1,18 @@
+---
+- hosts: localhost 
+  
+  tasks: 
+      - name: Install MySQL
+        apt:
+         name: mysql-server
+      
+      - name: Start service MySQL, if not started
+        service:
+         name: mysql
+         state: started
+
+      - name: Service status
+        command: service --status-all | grep mysql
+        register: ms_status
+
+      - debug: "{{ ms_status.stdout_lines }}"

@@ -1,0 +1,52 @@
+---
+- hosts: localhost 
+  gather_facts: false
+  
+  tasks:
+
+  - name: Update repo
+    apt:
+      update_cache: yes
+    ignore_errors: true
+
+  - name: Install package for setup repo
+    apt:
+      name: "{{ item }}"
+    with_items:
+     - ca-certificates
+     - curl 
+     - gnupg 
+      
+  - name: MKDIR
+    command: sudo mkdir /etc/apt/keyrings
+    ignore_errors: true
+
+  - name: Repos 
+    shell: |
+     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  - name: Update repo after set
+    apt:
+      update_cache: yes
+    ignore_errors: true
+
+  - name: Install Docker
+    apt:
+     name: "{{ item }}"
+    with_items:
+     - docker-ce 
+     - docker-ce-cli 
+     - containerd.io 
+     - docker-compose-plugin            
+
+  - name: Start service Docker, if not started
+    service:
+      name: docker
+      state: started
+
+  - name: "Hello World!"
+    command: docker run hello-world
+    register: x
+
+  - debug: "{{ x.stdout_lines }}"

@@ -1,0 +1,29 @@
+---
+- hosts: test 
+  
+  tasks: 
+  - name: Update repo
+    apt:
+      update_cache: yes
+    
+  - name: Install Apach
+    apt:
+      name: httpd
+
+  - name: Index
+    template:
+      src: ../template/apach.j2
+      dest: /var/www/html/index.html
+    notify: 
+     - restart
+
+  - name: START service nginx, if not started
+    service:
+      name: httpd
+      status: restart
+
+  handler:
+  - name: restart
+    service:
+      name: https
+      status: restart

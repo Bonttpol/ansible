@@ -1,0 +1,17 @@
+---
+- hosts: test
+  vars_files:
+    - ../group_vars/vm.yml
+    
+  tasks: 
+  - name: Install Postfix
+    apt:
+      name: postfix
+      update_cache: yes
+    tags: init postfix
+      
+  - name: Uninstall Postfix
+    apt:
+      name: postfix
+      state: absent
+    tags: drop postfix

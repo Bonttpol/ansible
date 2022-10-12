@@ -1,0 +1,23 @@
+---
+- hosts: localhost 
+  
+  tasks: 
+  #- name: Update repo
+   # apt:
+    #  update_cache: yes
+    #ignore_errors: true
+    
+  - name: Install Nginx
+    apt:
+      name: nginx
+      
+  - name: STOP service nginx, if not started
+    command: /etc/init.d/nginx stop
+
+  - name: Index
+    template:
+      src: ../template/nginx.j2
+      dest: /var/www/html/index.html
+
+  - name: START service nginx, if not started
+    command: /etc/init.d/nginx start

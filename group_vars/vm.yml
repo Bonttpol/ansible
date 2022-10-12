@@ -1,0 +1,3 @@
+#ansible_user: temp
+#ansible_password: TEMPpassword
+#become_user: temp
