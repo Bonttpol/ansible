@@ -1,0 +1,73 @@
+---
+# tasks file for dns
+
+- name: Remove resolv.conf
+  command: rm -rf /etc/resolv.conf
+
+- name: Resume resolv.conf
+  lineinfile: 
+    path: /etc/resolv.conf
+    regexp: '^'
+    line: 'nameserver 8.8.8.8'
+    state: present
+    create: True
+              
+- name: Install dnsmasq
+  apt:
+    name: dnsmasq
+    update_cache: yes
+
+- name: Copy dnsmasq.cfg
+  copy:
+    src: /etc/dnsmasq.conf
+    dest: /etc/dnsmasq.conf.bak
+    remote_src: yes
+
+- name: Config new dnsmasq.cfg
+  lineinfile: 
+    path: /etc/dnsmasq.conf
+    regexp: '^'
+    insertafter: EOF
+    line: "{{ item.line }}"
+  loop:  
+     - { line: 'port=53' }
+     - { line: 'domain-needed' }
+     - { line: 'bogus-priv' }
+     - { line: 'listen-address=127.0.0.1,{{ ansible_facts.all_ipv4_addresses.0 }}' }
+     - { line: 'expand-hosts' }
+
+- name: Change resolve.cfg
+  lineinfile: 
+    path: /etc/resolv.conf
+    insertbefore: 'nameserver 8.8.8.8'
+    line: 'nameserver {{ ansible_facts.all_ipv4_addresses.0 }}'
+
+- name: Check config
+  command: dnsmasq --test
+  register: check
+
+- name: Show check
+  debug: 
+    var: check
+    verbosity: 4
+
+- name: Stop "systemd-resolved"
+  systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: no
+
+- name: Start "dnsmasq"
+  systemd:
+    name: dnsmasq
+    state: restarted
+    enabled: yes
+
+- name: Show result
+  command: dig google.com +short
+  register: result
+
+- name: Debug result
+  debug: 
+    var: result
+    verbosity: 4

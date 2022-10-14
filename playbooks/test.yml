@@ -1,11 +1,10 @@
 ---
 - hosts: test
-  gather_facts: NO
-  become_user: temp
 
   tasks:
 
-    - name:
-      apt:
-        name: zabbix-agent
-        #update_cache: yes
+  - name: Change resolve.cfg
+    lineinfile: 
+      path: /etc/resolv.conf
+      insertbefore: 'nameserver 8.8.8.8'
+      line: 'nameserver {{ ansible_facts.all_ipv4_addresses.0 }}'
