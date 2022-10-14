@@ -10,7 +10,7 @@
     gen_users.yml
     postfix.yml
 ```
- B6.5.1
+ B6.6.1
 ```
     vsftpd-role.yml
 ```
