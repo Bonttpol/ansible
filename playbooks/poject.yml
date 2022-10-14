@@ -1,0 +1,67 @@
+---
+- hosts: app 
+  
+  tasks: 
+
+  - name: Install package for setup repo
+    apt:
+      name: "{{ item }}"
+    update_cache: yes
+    with_items:
+     - ca-certificates
+     - curl 
+     - gnupg 
+
+  - name: MKDIR
+    command: sudo mkdir /etc/apt/keyrings
+    ignore_errors: true
+
+  - name: Repos 
+    shell: |
+     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  - name: Install Docker
+    apt:
+     name: "{{ item }}"
+     update_cache: yes
+    with_items:
+     - docker-ce 
+     - docker-ce-cli 
+     - containerd.io 
+     - docker-compose-plugin            
+
+  - name: Start service Docker, if not started
+    service:
+      name: docker
+      state: started
+
+# -----------------------------
+
+- hosts: database 
+
+  tasks: 
+
+  - name: Install WGET
+    apt:
+      name: wget
+      update_cache: yes
+  
+  - name: Wget quiet
+    shell: |
+      wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+      echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list
+
+  - name: Install PostgreSQL
+    apt:
+     name: "{{ item }}"
+     update_cache: yes
+    with_items:
+     - postgresql-{{ version }}
+     - postgresql-client-{{ version }}
+
+  - name: Change date direcory
+    lineinfile: 
+      path: /etc/resolv.conf
+      regexp: '^data_directory'
+      line: "data_directory = {{ data_dir }}"
