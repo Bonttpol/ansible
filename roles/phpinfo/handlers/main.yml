@@ -1,2 +1,4 @@
 ---
 # handlers file for phpinfo
+- name: Reload Nginx
+  systemd: name=nginx state=reloaded

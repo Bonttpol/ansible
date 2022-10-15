@@ -1,5 +1,72 @@
 ---
 # tasks file for phpinfo
 
-  - name:
-  
+  - name: Install NGINX and PHP-FPM
+    apt:
+      name: "{{ item }}"
+      update_cache: yes
+    with_items:
+      - nginx 
+      - php8.1
+      - php8.1-fpm   
+
+  - name: Stop process
+    systemd:
+        name: "{{ item }}"
+        state: stopped
+    with_items:
+      - nginx
+      - php8.1-fpm
+
+  - name: Config PHP-FPM
+    lineinfile:
+      path: /etc/php/8.1/fpm/pool.d/www.conf
+      search_string: '{{ item.search }}'
+      line: '{{ item.data }}'
+    loop: 
+      - { search: 'listen =', data: "listen = /run/php/php8.1-fpm.sock" } 
+      - { search: 'listen.owner =', data: 'listen.owner = www-data'}
+      - { search: 'listen.group =', data: 'listen.group = www-data'}
+      - { search: 'listen.mode =', data: 'listen.mode = 0660'}
+
+  - name: Config NGINX
+    lineinfile:
+      path: /etc/nginx/sites-available/default
+      insertbefore: '^\}'
+      line: '{{ item }}'
+      backup: yes
+    with_items:
+      - "location ~ \\.php$ {"
+      - "  fastcgi_pass unix:/run/php/php8.1-fpm.sock;"
+      - "  fastcgi_index index.php;"
+      - "  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;"
+      - "  include /etc/nginx/fastcgi_params; }"
+
+  - name: Stop process
+    systemd:
+        name: "{{ item }}"
+        state: start
+    with_items:
+      - nginx
+      - php8.1-fpm
+
+  - name: Creat index.php
+    copy:
+      content: "<?php phpinfo() ?>"
+      dest: "/var/www/html/index.php"
+
+  - name: Copy index.php
+    copy:
+      src: "/var/www/html/index.php"
+      dest: "/opt/nginx/ansible/index.php"
+      remote_src: yes
+
+  - name: Relocation DocumentRoot
+    lineinfile:
+      path: /etc/nginx/sites-available/default
+      
+    notify: Reload Nginx
+
+        
+      
+    

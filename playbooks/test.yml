@@ -1,10 +1,19 @@
 ---
-- hosts: test
-
+- hosts: localhost
+  vars: 
+    phpV: '8.1'
   tasks:
 
-  - name: Change resolve.cfg
-    lineinfile: 
-      path: /etc/resolv.conf
-      insertbefore: 'nameserver 8.8.8.8'
-      line: 'nameserver {{ ansible_facts.all_ipv4_addresses.0 }}'
+  - name: First
+    lineinfile:
+      path: /etc/nginx/sites-available/default
+      insertbefore: '^\}'
+      line: '{{ item }}'
+    with_items:
+      - "location ~ \\.php$ {"
+      - "  fastcgi_pass unix:/run/php/php{{ phpV }}-fpm.sock;"
+      - "  fastcgi_index index.php;"
+      - "  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;"
+      - "  include /etc/nginx/fastcgi_params; }"
+
+  
