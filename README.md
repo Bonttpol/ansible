@@ -20,7 +20,11 @@
     roles/dns/tasks/main.yml
     role-dnsmasq.yml
     ---
+    roles/superusers/tasks/main.yml
+    role-superusers.yml
     ---    
+    roles/phpinfo/tasks/main.yml
+    role-phpinfo.yml
 ```
 Projec6 
 ```
