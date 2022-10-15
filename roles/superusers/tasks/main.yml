@@ -1,0 +1,27 @@
+---
+# tasks file for superusers
+
+  - name: Create group
+    group:
+      name: superusers
+      state: present
+  
+  - name: Create users
+    user: 
+      name: user1
+      password: 111
+      group: superusers
+  
+  - name: Create users
+    user: 
+      name: user2
+      password: 222
+      group: superusers
+
+  - name: Access
+    lineinfile: 
+      path: /etc/sudoers
+      insertafter: '%sudo   ALL=(ALL:ALL) ALL'
+      line: "%superusers ALL=(root) ALL"
+      validate: /usr/sbin/visudo -cf %s
+  
