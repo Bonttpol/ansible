@@ -1,20 +1,22 @@
-test ansible_host=10.129.0.10
-vm1 ansible_host=
-vm2 ansible_host=
-vm3 ansible_host=
+vm1 ansible_host=10.129.0.10
+vm2 ansible_host=10.129.0.11
+vm3 ansible_host=10.129.0.31
 
 [vm]
-test
+vm1
+vm2
+vm3
 
 [app]
-vm[2-3]
+vm2
+vm3
 
 [database]
 vm1
 
 [database:vars]
 version=13
-data_dir=/opt/example
+data_dir=/opt/db
 
 [web]
 vm1
