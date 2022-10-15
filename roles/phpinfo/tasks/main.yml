@@ -54,6 +54,12 @@
     copy:
       content: "<?php phpinfo() ?>"
       dest: "/var/www/html/index.php"
+  
+  - name: MKDIR
+    command: 
+      argv:
+        - mkdir /opt/nginx
+        - mkdir /opt/nginx/ansible
 
   - name: Copy index.php
     copy:
@@ -64,7 +70,8 @@
   - name: Relocation DocumentRoot
     lineinfile:
       path: /etc/nginx/sites-available/default
-      
+      regexp: \sroot /var/www/html;
+      line: "root /opt/nginx/ansible;"
     notify: Reload Nginx
 
         

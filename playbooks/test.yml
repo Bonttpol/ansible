@@ -4,16 +4,9 @@
     phpV: '8.1'
   tasks:
 
-  - name: First
+  - name: Relocation DocumentRoot
     lineinfile:
       path: /etc/nginx/sites-available/default
-      insertbefore: '^\}'
-      line: '{{ item }}'
-    with_items:
-      - "location ~ \\.php$ {"
-      - "  fastcgi_pass unix:/run/php/php{{ phpV }}-fpm.sock;"
-      - "  fastcgi_index index.php;"
-      - "  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;"
-      - "  include /etc/nginx/fastcgi_params; }"
-
-  
+      regexp: \sroot /var/www/html;
+      line: "root /opt/nginx/ansible;"
+ 
