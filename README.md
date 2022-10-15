@@ -15,3 +15,14 @@
     roles/vsftpd/tasks/main.yml
     vsftpd-role.yml
 ```
+ B6.9.2
+```
+    roles/dns/tasks/main.yml
+    role-dnsmasq.yml
+    ---
+    ---    
+```
+Projec6 
+```
+    project.yml
+```
