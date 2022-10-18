@@ -1,0 +1,26 @@
+---
+# tasks file for http
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    update_cache: yes
+
+- name: Config NGINX
+  lineinfile:
+    path: /etc/nginx/sites-available/default
+    insertbefore: '^\}'
+    line: '{{ item }}'
+    backup: yes
+  with_items:
+    - "location ~ \\.php$ {"
+    - "  fastcgi_pass {{ php_ip }}:9000;""
+    - "  fastcgi_pass unix:/run/php/php8.1-fpm.sock;"
+    - "  fastcgi_index index.php;"
+    - "  fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;"
+    - "  include /etc/nginx/fastcgi_params; }"
+
+- name: Start NGINX
+  systemd: 
+    name: nginx
+    state: reload

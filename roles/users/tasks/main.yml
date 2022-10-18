@@ -1,0 +1,12 @@
+---
+# tasks file for users
+
+  - name: Create user
+    user:
+      name: user1
+      shell: /bin/bash
+
+  - name: Copy key
+    copy:
+      src: "~/.ssh/id_rsa-enc.pub"
+      dst: "/home/user1/.ssh/authorized_keys"

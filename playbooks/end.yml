@@ -1,0 +1,34 @@
+---
+- hosts: {{ srv }}
+  vars_prompt:
+
+    - name: nginx_ip
+      prompt: NGINX install on another server? What is his IP?
+      private: no
+      default: "127.0.0.1"
+    
+    - name: php_ip
+      prompt: PHP install on another server? What is his IP?
+      private: no
+      default: "127.0.0.1"
+
+  tasks:
+    
+    - name: Install NGINX
+      import_role:
+        name: http 
+        vars: php_ip
+      when: {{  ansible_facts['default_ipv4']['address'] }} == nginx_ip
+      notify: New user
+
+    - name: Install PHP
+      import_role:
+        name: php 
+        vars: nginx_ip
+      when: {{  ansible_facts['default_ipv4']['address'] }} == php_ip
+      notify: New user
+
+  hendler:
+    - name: New user
+      include_role:
+        name: users
