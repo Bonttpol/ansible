@@ -26,6 +26,10 @@
     roles/phpinfo/tasks/main.yml
     role-phpinfo.yml
 ```
+Practice 
+```
+    end.yml
+```
 Projec6 
 ```
     project.yml
