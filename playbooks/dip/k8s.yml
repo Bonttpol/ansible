@@ -1,0 +1,35 @@
+- hosts: master
+  become: yes
+  tasks:
+    - name: stop firewall
+      service:
+        name: ufw
+        state: stopped
+        enabled: no
+
+    - name: initialize the cluster
+      shell: kubeadm init --pod-network-cidr=10.10.0.0/16 --ignore-preflight-errors=SystemVerification >> cluster_initialized.txt
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+
+    - name: create .kube directory
+      #become: yes
+      become_user: ubuntu
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    # - name: copy admin.conf to user's kube config
+    #   copy:
+    #     src: /etc/kubernetes/admin.conf
+    #     dest: /home/ubuntu/.kube/config
+    #     remote_src: yes
+    #     owner: ubuntu
+
+    - name: get nodes
+      shell: kubectl get nodes
+      register: k8s_master_node
+    
+    - debug: var=k8s_master_node.std

@@ -1,24 +1,7 @@
-vm1 ansible_host=10.129.0.20
-vm2 ansible_host=10.129.0.11
-vm3 ansible_host=10.129.0.31
-test ansible_host=10.129.0.40
-doc ansible_host=10.129.0.20
+srv ansible_host=172.20.0.13
+worker ansible_host=172.20.0.31
+master ansible_host=172.20.0.3
 
-[vm]
-vm1
-vm2
-vm3
-
-[app]
-vm2
-vm3
-
-[database]
-vm1
-
-[database:vars]
-version=13
-data_dir=/opt/db
-
-[web]
-vm1
+[k8s]
+worker
+master

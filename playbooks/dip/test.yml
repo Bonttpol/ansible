@@ -1,0 +1,7 @@
+- hosts: master
+
+  tasks:
+   - name: install kubeadm
+     apt:
+       name: kubeadm=1.26.1
+       state: present
